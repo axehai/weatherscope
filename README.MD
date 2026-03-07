@@ -8,9 +8,7 @@ The project follows **Layered Architecture with Domain-Driven Design (DDD)** pri
 
 # V1 Scope
 
-The first version focuses on delivering **core current weather data**.
-
-### Included
+## Included
 
 * Current weather conditions
 * Temperature
@@ -20,7 +18,7 @@ The first version focuses on delivering **core current weather data**.
 * Precipitation
 * Weather condition description
 
-### Excluded (Out of Scope for v1)
+## Excluded (Out of Scope for v1)
 
 * Air Quality Index (AQI)
 * Historical weather
@@ -35,7 +33,7 @@ AQI was intentionally removed due to provider pricing and API rate limits.
 
 The system follows **Layered Architecture combined with Domain-Driven Design**.
 
-```
+```text
 src/
   domain/
   use-cases/
@@ -44,27 +42,29 @@ src/
   contracts/
 ```
 
-### Domain
+## Domain
 
 Contains **core business models and logic**.
 
 Examples:
 
-* Weather
-* Location
-* Measurement units
+```text
+Weather
+Location
+MeasurementUnits
+```
 
-Domain objects should remain **independent of external providers**.
+Domain objects remain **independent of external providers**.
 
 ---
 
-### Use Cases
+## Use Cases
 
 Use cases define **application behavior**.
 
 Examples:
 
-```
+```text
 GetCurrentWeather
 RefreshWeatherCache
 ```
@@ -79,7 +79,7 @@ Use cases are the **primary unit testing target**.
 
 ---
 
-### Services
+## Services
 
 Application services coordinate interactions between:
 
@@ -91,13 +91,13 @@ Services should contain **minimal business logic**.
 
 ---
 
-### Providers
+## Providers
 
 Providers integrate with external weather APIs.
 
 Example structure:
 
-```
+```text
 providers/
   tomorrow/
     tomorrow-client.ts
@@ -108,13 +108,13 @@ Provider responses are mapped into **domain models**.
 
 ---
 
-### Contracts
+## Contracts
 
 Contracts define the **stable response structure** returned by the API.
 
 Example:
 
-```
+```text
 WeatherResponseV1
 ```
 
@@ -124,7 +124,7 @@ Contracts should change **very rarely** once published.
 
 # Testing Strategy
 
-The project follows **use-case driven testing**.
+The project follows **use-case-driven testing**.
 
 Each feature is developed by:
 
@@ -134,7 +134,7 @@ Each feature is developed by:
 
 Example:
 
-```
+```text
 use-cases/
   get-current-weather.ts
   get-current-weather.test.ts
@@ -150,19 +150,15 @@ External API calls should always be **mocked in tests**.
 
 ---
 
-# Provider Rate Limits
+# Provider Rate Limits — Tomorrow.io (Free Tier)
 
-Current provider limits:
+As of March 2026.
 
-* **3 requests per second**
-* **25 requests per hour**
-* **500 requests per day**
+* 3 requests per second
+* 25 requests per hour
+* 500 requests per day
 
-These constraints will require:
-
-* caching
-* refresh TTL policies
-* request deduplication
+These limits are defined by the Tomorrow.io free plan and may change over time. Refer to the provider documentation for the latest details.
 
 ---
 
@@ -180,29 +176,28 @@ Typical flow:
 
 Branch naming convention:
 
-```
+```text
 type/<issue-number>-<short-description>
 ```
 
 Examples:
 
-```
+```text
 feature/5-domain-models
-fix/11-readme-scope
+fix/11-cache-ttl
+docs/15-update-readme
 ```
 
 ---
 
 # Pull Request Reviews
 
-Pull requests are automatically reviewed by:
-
-CodeRabbit
+Pull requests are automatically reviewed by CodeRabbit.
 
 It provides:
 
 * PR summaries
-* bug detection
+* potential bug detection
 * improvement suggestions
 
 ---
@@ -211,20 +206,20 @@ It provides:
 
 Clone the repository:
 
-```
+```bash
 git clone <repo-url>
 cd weatherscope
 ```
 
 Install dependencies:
 
-```
+```bash
 npm install
 ```
 
 Run the project:
 
-```
+```bash
 npm run dev
 ```
 
@@ -239,7 +234,7 @@ Planned improvements after v1:
 * Historical weather
 * Multi-provider failover
 * Advanced caching layer
-* Rate-limit aware scheduler
+* Rate-limit-aware request scheduler
 
 ---
 
