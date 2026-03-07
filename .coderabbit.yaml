@@ -1,102 +1,103 @@
 reviews:
   profile: assertive
+  path_instructions:
+    - path: "**/*.kt"
+      instructions: |
+        The purpose of these reviews is to strictly enforce Clean Architecture correctness,
+        separation of concerns, and maintainability for this Android project. Avoid 
+        nitpicking formatting unless it severely harms readability.
 
-instructions: |
-  The purpose of these reviews is to strictly enforce Clean Architecture correctness,
-  separation of concerns, and maintainability for this Android project. Avoid 
-  nitpicking formatting unless it severely harms readability.
+        ============================================================
+        PROJECT LAYER STRUCTURE & DEPENDENCY RULE
+        ============================================================
+        Typical modules/directories:
+        presentation/
+        domain/
+        data/
+        di/
+        common/
 
-  ============================================================
-  PROJECT LAYER STRUCTURE & DEPENDENCY RULE
-  ============================================================
-  Typical modules/directories:
-  presentation/
-  domain/
-  data/
-  di/
-  common/
+        Dependency Direction:
+        - Presentation depends on Domain.
+        - Data depends on Domain.
+        - Domain depends on NOTHING (pure Kotlin).
 
-  Dependency Direction:
-  - Presentation depends on Domain.
-  - Data depends on Domain.
-  - Domain depends on NOTHING (pure Kotlin).
+        Flag violations where the Domain layer depends on Data or Presentation, 
+        or where Presentation bypasses Domain to access Data directly.
 
-  Flag violations where the Domain layer depends on Data or Presentation, 
-  or where Presentation bypasses Domain to access Data directly.
+        ============================================================
+        DOMAIN LAYER (STRICT)
+        ============================================================
+        Domain contains core business logic.
 
-  ============================================================
-  DOMAIN LAYER (STRICT)
-  ============================================================
-  Domain contains core business logic.
+        Rules:
+        - Must not depend on Android framework (Context, Activity, View, etc.).
+        - Must not depend on networking or DB libraries (Retrofit, Room, Gson, etc.).
+        - Must not import classes from presentation or data layers.
+        - Contains entities, repository interfaces, and use cases.
+        - Use cases must be focused (Single Responsibility) and named as verbs.
 
-  Rules:
-  - Must not depend on Android framework (Context, Activity, View, etc.).
-  - Must not depend on networking or DB libraries (Retrofit, Room, Gson, etc.).
-  - Must not import classes from presentation or data layers.
-  - Contains entities, repository interfaces, and use cases.
-  - Use cases must be focused (Single Responsibility) and named as verbs.
+        Flag:
+        - Framework or library dependencies (e.g., DTOs leaking into Domain).
+        - Repository implementations (they belong in data).
 
-  Flag:
-  - Framework or library dependencies (e.g., DTOs leaking into Domain).
-  - Repository implementations (they belong in data).
+        ============================================================
+        DATA LAYER
+        ============================================================
+        Data layer implements Domain interfaces and handles external sources.
 
-  ============================================================
-  DATA LAYER
-  ============================================================
-  Data layer implements Domain interfaces and handles external sources.
+        Allowed responsibilities:
+        - API clients and database access.
+        - DTOs (e.g., Retrofit models).
+        - Mapping DTOs to Domain models.
+        - Repository implementations.
 
-  Allowed responsibilities:
-  - API clients and database access.
-  - DTOs (e.g., Retrofit models).
-  - Mapping DTOs to Domain models.
-  - Repository implementations.
+        Flag:
+        - Business rules or use case logic inside repositories.
+        - Returning DTOs directly to the Presentation layer without mapping.
 
-  Flag:
-  - Business rules or use case logic inside repositories.
-  - Returning DTOs directly to the Presentation layer without mapping.
+        ============================================================
+        PRESENTATION LAYER (STRICT)
+        ============================================================
+        Presentation contains UI (Jetpack Compose), ViewModels, and UI state.
 
-  ============================================================
-  PRESENTATION LAYER (STRICT)
-  ============================================================
-  Presentation contains UI (Jetpack Compose), ViewModels, and UI state.
+        Rules:
+        - UI renders state only and must not contain business logic.
+        - ViewModels coordinate use cases and expose UI state via StateFlow/Flow.
+        - ViewModels must remain platform-independent (No Context, Android Views, or Compose UI APIs).
 
-  Rules:
-  - UI renders state only and must not contain business logic.
-  - ViewModels coordinate use cases and expose UI state via StateFlow/Flow.
-  - ViewModels must remain platform-independent (No Context, Android Views, or Compose UI APIs).
+        Flag:
+        - Business logic inside Compose screens.
+        - Direct repository access from UI or ViewModels (must use UseCases).
+        - Mutable state exposed directly to the UI.
 
-  Flag:
-  - Business logic inside Compose screens.
-  - Direct repository access from UI or ViewModels (must use UseCases).
-  - Mutable state exposed directly to the UI.
+        ============================================================
+        DEPENDENCY INJECTION (Hilt)
+        ============================================================
+        The `di` layer wires dependencies.
 
-  ============================================================
-  DEPENDENCY INJECTION (Hilt)
-  ============================================================
-  The `di` layer wires dependencies.
+        Rules:
+        - No business logic in DI modules.
+        - Prefer constructor injection across the app.
 
-  Rules:
-  - No business logic in DI modules.
-  - Prefer constructor injection across the app.
+        ============================================================
+        TESTABILITY
+        ============================================================
+        Code must be testable by design.
 
-  ============================================================
-  TESTABILITY
-  ============================================================
-  Code must be testable by design.
+        Rules:
+        - Every UseCase must have a corresponding Unit Test.
+        - Inject dispatchers for Coroutines (do not hardcode Dispatchers.IO/Main).
 
-  Rules:
-  - Every UseCase must have a corresponding Unit Test.
-  - Inject dispatchers for Coroutines (do not hardcode Dispatchers.IO/Main).
+        Flag:
+        - Hardcoded dependencies preventing testing.
+        - New UseCases added without test coverage.
 
-  Flag:
-  - Hardcoded dependencies preventing testing.
-  - New UseCases added without test coverage.
-
-  ============================================================
-  REVIEW PRIORITY
-  ============================================================
-  Prioritize feedback in this order:
-  1. Architecture & boundary violations (Data/Presentation leaking into Domain)
-  2. Missing unit tests for UseCases
-  3. State management and concurrency bugs
-  4. Maintainability and naming clarity
+        ============================================================
+        REVIEW PRIORITY
+        ============================================================
+        Prioritize feedback in this order:
+        1. Architecture & boundary violations (Data/Presentation leaking into Domain)
+        2. Missing unit tests for UseCases
+        3. State management and concurrency bugs
+        4. Maintainability and naming clarity
