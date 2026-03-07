@@ -1,0 +1,171 @@
+reviews:
+  profile: balanced
+
+instructions: |
+  The purpose of reviews is to enforce architectural correctness,
+  separation of concerns, and maintainability. Avoid nitpicking
+  formatting unless it harms readability.
+
+  ============================================================
+  PROJECT LAYER STRUCTURE
+  ============================================================
+
+  Typical modules/directories:
+
+  presentation/
+  domain/
+  data/
+  di/
+
+  Dependency direction must be:
+
+  presentation → domain → data
+
+  The DI layer wires dependencies but must not contain business logic.
+
+  Flag violations where layers depend on higher layers.
+
+  ============================================================
+  DOMAIN LAYER (STRICT)
+  ============================================================
+
+  Domain contains core business logic.
+
+  Rules:
+  - Must not depend on Android, UI frameworks, or networking libraries
+  - Must not import classes from presentation or data
+  - Should contain entities, value objects, and business rules
+  - Prefer pure functions and immutable models
+
+  Flag:
+  - framework dependencies
+  - repository implementations
+  - UI logic
+  - networking logic
+
+  ============================================================
+  DATA LAYER
+  ============================================================
+
+  Data layer provides data sources and repository implementations.
+
+  Allowed responsibilities:
+  - API clients
+  - database access
+  - DTO mapping
+  - repository implementations
+
+  Not allowed:
+  - business rules
+  - UI logic
+
+  Data should map external models into domain models.
+
+  ============================================================
+  PRESENTATION LAYER (STRICT)
+  ============================================================
+
+  Presentation contains UI, ViewModels, and state management.
+
+  Rules:
+  - UI renders state only
+  - UI must not contain business logic
+  - UI must not access repositories directly
+  - ViewModels coordinate use cases and expose UI state
+
+  Flag:
+  - business logic in UI
+  - repository access from UI
+  - domain mutations inside views
+
+  ============================================================
+  VIEWMODEL RULES (STRICT)
+  ============================================================
+
+  ViewModels must remain platform-independent.
+
+  Do not allow usage of:
+  - Context
+  - Activity
+  - Fragment
+  - Android Views
+  - Compose UI APIs
+
+  ViewModels should expose:
+
+  - immutable UI state
+  - StateFlow / Flow streams
+  - event handling functions
+
+  ============================================================
+  STATE MANAGEMENT
+  ============================================================
+
+  The project follows a hybrid MVVM / MVI approach.
+
+  Enforce unidirectional data flow:
+
+  UI Event → ViewModel → UseCase → Domain → State Update → UI
+
+  Rules:
+  - UI state should be immutable
+  - Prefer a single state object for each screen
+  - Avoid multiple sources of truth
+
+  Flag:
+  - mutable state exposed to UI
+  - UI mutating ViewModel state
+  - bidirectional state updates
+
+  ============================================================
+  DEPENDENCY INJECTION
+  ============================================================
+
+  The `di` layer is responsible for dependency wiring.
+
+  Rules:
+  - No business logic in DI modules
+  - Use constructor injection where possible
+  - Avoid service locators or global singletons
+
+  ============================================================
+  TESTABILITY
+  ============================================================
+
+  Code should be testable by design.
+
+  Prefer:
+  - constructor injection
+  - interfaces for boundaries
+  - pure domain logic
+
+  Flag:
+  - hardcoded dependencies
+  - tightly coupled infrastructure
+  - logic that prevents unit testing
+
+  ============================================================
+  CODE QUALITY (BALANCED)
+  ============================================================
+
+  Suggest improvements when:
+
+  - functions are overly complex
+  - responsibilities are mixed
+  - duplication appears
+  - naming harms clarity
+
+  Avoid reporting trivial formatting issues.
+
+  ============================================================
+  REVIEW PRIORITY
+  ============================================================
+
+  Prioritize feedback in this order:
+
+  1. Architecture violations
+  2. Logic bugs
+  3. State management problems
+  4. Testability issues
+  5. Maintainability improvements
+  6. Style suggestions
