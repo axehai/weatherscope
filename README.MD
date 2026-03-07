@@ -1,98 +1,231 @@
 # WeatherScope
 
-[![Platform](https://img.shields.io/badge/platform-Android-3DDC84)](#)
-[![UI](https://img.shields.io/badge/UI-Compose-7F52FF)](#)
-[![Status](https://img.shields.io/badge/status-v1%20scope%20locked-0EA5E9)](#)
+WeatherScope is a lightweight weather data service designed to expose a **stable weather data contract** while integrating with external weather providers.
 
-A tiny weather app with *strict v1 scope*: **7-day forecast + highlights + AQ**, built to learn real-world API plumbing (geocoding + caching + quota safety) without turning into a meteorology PhD.
+The project follows **Layered Architecture with Domain-Driven Design (DDD)** principles and is built around **use cases** that encapsulate application behavior.
 
 ---
 
-## Data Sources
+# V1 Scope
 
-**Weather + Air Quality:** Tomorrow.io
-- Daily forecast (7 days)
-- Highlights: **wind, real feel, rain chance %, UV**
-- Air quality: **AQI, PM2.5, NO₂**
+## Included
 
-**Geocoding (search → lat/lon):** Open-Meteo Geocoding API
-- Type `"del"` → list of places → select → store `lat/lon`
+* Current weather conditions
+* Temperature
+* Humidity
+* Wind speed
+* Wind direction
+* Precipitation
+* Weather condition description
 
-**Icons:** Local assets
-- Weather condition icons are bundled locally (no remote icon URLs)
-- Daily rows use **day** icons
-- Unknown codes → fallback icon
-- If using an external icon pack: add attribution in Credits/About
+## Excluded (Out of Scope for v1)
 
----
+* Air Quality Index (AQI)
+* Historical weather
+* Long-range forecasts
+* Multi-provider failover
 
-## v1 Scope (Locked)
-
-### Forecast
-- Show **next 7 days** for the **active location**
-- Each day includes:
-    - date
-    - min / max temperature
-    - rain chance (%)
-    - condition icon (local)
-
-### Highlights (single group)
-- Wind
-- RealFeel (apparent temperature)
-- Rain chance (%)
-- UV index
-- Air Quality: **AQI + PM2.5 + NO₂**
-
-### Location
-- **Single active location** (v1)
-- **Default on first install:** New Delhi (hardcoded lat/lon)
-- On launch: show **cached data immediately**, then refresh via TTL
-- Location can be set by:
-    - GPS (optional)
-    - Search (geocoding)
+AQI was intentionally removed due to provider pricing and API rate limits.
 
 ---
 
-## Location Permission Flow
+# Architecture
 
-- If location permission is **not granted** on launch:
-    - land on a dedicated **rationale screen** (with animation + explanation)
-    - user can grant permission or continue without it
-- If permission is **denied**:
-    - GPS entry point is **disabled everywhere**
-    - app continues using last active location (or default New Delhi)
+The system follows **Layered Architecture combined with Domain-Driven Design**.
 
----
+```text
+src/
+  domain/
+  use-cases/
+  services/
+  providers/
+  contracts/
+```
 
-## Caching & Quota Safety
+## Domain
 
-- Cache per active location:
-    - 7-day forecast
-    - highlights
-    - air quality
-- Refresh policy (TTL):
-    - forecast: **6–12 hours**
-    - air quality: **1–3 hours** (or same as forecast to simplify)
-- On offline / API failure / rate limit:
-    - show cached data + “last updated”
-    - show a non-blocking error indicator
+Contains **core business models and logic**.
 
----
+Examples:
 
-## Out of Scope (v1)
+```text
+Weather
+Location
+MeasurementUnits
+```
 
-Hourly forecast, “live now” screen, alerts/notifications, maps/radar, widgets, multiple saved locations, accounts/sync.
+Domain objects remain **independent of external providers**.
 
 ---
 
-## v2 Hooks
+## Use Cases
 
-Multi-location favorites, hourly forecast, widgets, alerts, provider fallback.
+Use cases define **application behavior**.
+
+Examples:
+
+```text
+GetCurrentWeather
+RefreshWeatherCache
+```
+
+Each use case:
+
+* orchestrates domain logic
+* calls services/providers
+* returns contract responses
+
+Use cases are the **primary unit testing target**.
 
 ---
 
-## Credits
+## Services
 
-- Weather & Air Quality data: Tomorrow.io
-- Geocoding: Open-Meteo
-- Icon attribution (only if using a licensed pack): listed in Credits/About in-app
+Application services coordinate interactions between:
+
+* providers
+* domain models
+* caching policies
+
+Services should contain **minimal business logic**.
+
+---
+
+## Providers
+
+Providers integrate with external weather APIs.
+
+Example structure:
+
+```text
+providers/
+  tomorrow/
+    tomorrow-client.ts
+    tomorrow-mapper.ts
+```
+
+Provider responses are mapped into **domain models**.
+
+---
+
+## Contracts
+
+Contracts define the **stable response structure** returned by the API.
+
+Example:
+
+```text
+WeatherResponseV1
+```
+
+Contracts should change **very rarely** once published.
+
+---
+
+# Testing Strategy
+
+The project follows **use-case-driven testing**.
+
+Each feature is developed by:
+
+1. Writing the use case
+2. Writing unit tests for the use case
+3. Implementing supporting services/providers
+
+Example:
+
+```text
+use-cases/
+  get-current-weather.ts
+  get-current-weather.test.ts
+```
+
+Tests validate:
+
+* domain behavior
+* use case orchestration
+* provider mapping
+
+External API calls should always be **mocked in tests**.
+
+---
+
+# Development Workflow
+
+Development is **issue-driven**.
+
+Typical flow:
+
+1. Create an issue
+2. Create a branch
+3. Implement the feature
+4. Open a pull request
+5. Automated PR review runs
+
+Branch naming convention:
+
+```text
+type/<issue-number>-<short-description>
+```
+
+Examples:
+
+```text
+feature/5-domain-models
+fix/11-cache-ttl
+docs/15-update-readme
+```
+
+---
+
+# Pull Request Reviews
+
+Pull requests are automatically reviewed by CodeRabbit.
+
+It provides:
+
+* PR summaries
+* potential bug detection
+* improvement suggestions
+
+---
+
+# Local Development
+
+Clone the repository:
+
+```bash
+git clone <repo-url>
+cd weatherscope
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the project:
+
+```bash
+npm run dev
+```
+
+---
+
+# Future Scope
+
+Planned improvements after v1:
+
+* Air Quality (AQI)
+* Forecast APIs
+* Historical weather
+* Multi-provider failover
+* Advanced caching layer
+* Rate-limit-aware request scheduler
+
+---
+
+# License
+
+MIT
