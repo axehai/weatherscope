@@ -1,171 +1,102 @@
 reviews:
-  profile: balanced
+  profile: assertive
 
 instructions: |
-  The purpose of reviews is to enforce architectural correctness,
-  separation of concerns, and maintainability. Avoid nitpicking
-  formatting unless it harms readability.
+  The purpose of these reviews is to strictly enforce Clean Architecture correctness,
+  separation of concerns, and maintainability for this Android project. Avoid 
+  nitpicking formatting unless it severely harms readability.
 
   ============================================================
-  PROJECT LAYER STRUCTURE
+  PROJECT LAYER STRUCTURE & DEPENDENCY RULE
   ============================================================
-
   Typical modules/directories:
-
   presentation/
   domain/
   data/
   di/
+  common/
 
-  Dependency direction must be:
+  Dependency Direction:
+  - Presentation depends on Domain.
+  - Data depends on Domain.
+  - Domain depends on NOTHING (pure Kotlin).
 
-  presentation → domain → data
-
-  The DI layer wires dependencies but must not contain business logic.
-
-  Flag violations where layers depend on higher layers.
+  Flag violations where the Domain layer depends on Data or Presentation, 
+  or where Presentation bypasses Domain to access Data directly.
 
   ============================================================
   DOMAIN LAYER (STRICT)
   ============================================================
-
   Domain contains core business logic.
 
   Rules:
-  - Must not depend on Android, UI frameworks, or networking libraries
-  - Must not import classes from presentation or data
-  - Should contain entities, value objects, and business rules
-  - Prefer pure functions and immutable models
+  - Must not depend on Android framework (Context, Activity, View, etc.).
+  - Must not depend on networking or DB libraries (Retrofit, Room, Gson, etc.).
+  - Must not import classes from presentation or data layers.
+  - Contains entities, repository interfaces, and use cases.
+  - Use cases must be focused (Single Responsibility) and named as verbs.
 
   Flag:
-  - framework dependencies
-  - repository implementations
-  - UI logic
-  - networking logic
+  - Framework or library dependencies (e.g., DTOs leaking into Domain).
+  - Repository implementations (they belong in data).
 
   ============================================================
   DATA LAYER
   ============================================================
-
-  Data layer provides data sources and repository implementations.
+  Data layer implements Domain interfaces and handles external sources.
 
   Allowed responsibilities:
-  - API clients
-  - database access
-  - DTO mapping
-  - repository implementations
+  - API clients and database access.
+  - DTOs (e.g., Retrofit models).
+  - Mapping DTOs to Domain models.
+  - Repository implementations.
 
-  Not allowed:
-  - business rules
-  - UI logic
-
-  Data should map external models into domain models.
+  Flag:
+  - Business rules or use case logic inside repositories.
+  - Returning DTOs directly to the Presentation layer without mapping.
 
   ============================================================
   PRESENTATION LAYER (STRICT)
   ============================================================
-
-  Presentation contains UI, ViewModels, and state management.
+  Presentation contains UI (Jetpack Compose), ViewModels, and UI state.
 
   Rules:
-  - UI renders state only
-  - UI must not contain business logic
-  - UI must not access repositories directly
-  - ViewModels coordinate use cases and expose UI state
+  - UI renders state only and must not contain business logic.
+  - ViewModels coordinate use cases and expose UI state via StateFlow/Flow.
+  - ViewModels must remain platform-independent (No Context, Android Views, or Compose UI APIs).
 
   Flag:
-  - business logic in UI
-  - repository access from UI
-  - domain mutations inside views
+  - Business logic inside Compose screens.
+  - Direct repository access from UI or ViewModels (must use UseCases).
+  - Mutable state exposed directly to the UI.
 
   ============================================================
-  VIEWMODEL RULES (STRICT)
+  DEPENDENCY INJECTION (Hilt)
   ============================================================
-
-  ViewModels must remain platform-independent.
-
-  Do not allow usage of:
-  - Context
-  - Activity
-  - Fragment
-  - Android Views
-  - Compose UI APIs
-
-  ViewModels should expose:
-
-  - immutable UI state
-  - StateFlow / Flow streams
-  - event handling functions
-
-  ============================================================
-  STATE MANAGEMENT
-  ============================================================
-
-  The project follows a hybrid MVVM / MVI approach.
-
-  Enforce unidirectional data flow:
-
-  UI Event → ViewModel → UseCase → Domain → State Update → UI
+  The `di` layer wires dependencies.
 
   Rules:
-  - UI state should be immutable
-  - Prefer a single state object for each screen
-  - Avoid multiple sources of truth
-
-  Flag:
-  - mutable state exposed to UI
-  - UI mutating ViewModel state
-  - bidirectional state updates
-
-  ============================================================
-  DEPENDENCY INJECTION
-  ============================================================
-
-  The `di` layer is responsible for dependency wiring.
-
-  Rules:
-  - No business logic in DI modules
-  - Use constructor injection where possible
-  - Avoid service locators or global singletons
+  - No business logic in DI modules.
+  - Prefer constructor injection across the app.
 
   ============================================================
   TESTABILITY
   ============================================================
+  Code must be testable by design.
 
-  Code should be testable by design.
-
-  Prefer:
-  - constructor injection
-  - interfaces for boundaries
-  - pure domain logic
+  Rules:
+  - Every UseCase must have a corresponding Unit Test.
+  - Inject dispatchers for Coroutines (do not hardcode Dispatchers.IO/Main).
 
   Flag:
-  - hardcoded dependencies
-  - tightly coupled infrastructure
-  - logic that prevents unit testing
-
-  ============================================================
-  CODE QUALITY (BALANCED)
-  ============================================================
-
-  Suggest improvements when:
-
-  - functions are overly complex
-  - responsibilities are mixed
-  - duplication appears
-  - naming harms clarity
-
-  Avoid reporting trivial formatting issues.
+  - Hardcoded dependencies preventing testing.
+  - New UseCases added without test coverage.
 
   ============================================================
   REVIEW PRIORITY
   ============================================================
-
   Prioritize feedback in this order:
-
-  1. Architecture violations
-  2. Logic bugs
-  3. State management problems
-  4. Testability issues
-  5. Maintainability improvements
-  6. Style suggestions
+  1. Architecture & boundary violations (Data/Presentation leaking into Domain)
+  2. Missing unit tests for UseCases
+  3. State management and concurrency bugs
+  4. Maintainability and naming clarity
