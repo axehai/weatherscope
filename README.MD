@@ -150,18 +150,6 @@ External API calls should always be **mocked in tests**.
 
 ---
 
-# Provider Rate Limits — Tomorrow.io (Free Tier)
-
-As of March 2026.
-
-* 3 requests per second
-* 25 requests per hour
-* 500 requests per day
-
-These limits are defined by the Tomorrow.io free plan and may change over time. Refer to the provider documentation for the latest details.
-
----
-
 # Development Workflow
 
 Development is **issue-driven**.
