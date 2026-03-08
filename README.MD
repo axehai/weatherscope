@@ -19,9 +19,6 @@ The goal of this project is not just building a weather UI, but showcasing **pro
 - Coroutines & Flow
 - Jetpack Compose
 - Dagger Hilt
-- Retrofit & OkHttp
-- Coil
-- GitHub Actions (CI)
 
 ---
 
@@ -98,7 +95,6 @@ The repository uses **GitHub Actions** to run automated checks on pull requests:
 
 - Project build validation
 - Unit test execution
-- Static analysis (if configured)
 
 This ensures the `main` branch remains stable.
 
@@ -114,13 +110,6 @@ Each feature is developed by:
 2. Writing unit tests for the use case
 3. Implementing supporting services/providers
 
-Example:
-
-```text
-use-cases/
-  get-current-weather.ts
-  get-current-weather.test.ts
-```
 
 Tests validate:
 
