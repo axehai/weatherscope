@@ -1,124 +1,106 @@
-# WeatherScope
+# 🌦️ Weatherscope
 
-WeatherScope is a lightweight weather data service designed to expose a **stable weather data contract** while integrating with external weather providers.
+<p align="center">
+<img src="https://img.shields.io/badge/Kotlin-1.9+-7F52FF?logo=kotlin&logoColor=white"/>
+<img src="https://img.shields.io/badge/Jetpack%20Compose-UI-4285F4?logo=android&logoColor=white"/>
+<img src="https://img.shields.io/badge/Min%20SDK-24-3DDC84?logo=android&logoColor=white"/>
+<img src="https://img.shields.io/github/actions/workflow/status/axehai/weatherscope/android-ci.yml?label=Build&logo=githubactions"/>
+</p>
 
-The project follows **Layered Architecture with Domain-Driven Design (DDD)** principles and is built around **use cases** that encapsulate application behavior.
+**Weatherscope** is a modern Android application built with **Jetpack Compose** that demonstrates how to structure scalable Android apps using **Clean Architecture** and modern Android development practices.
 
----
-
-# V1 Scope
-
-## Included
-
-* Current weather conditions
-* Temperature
-* Humidity
-* Wind speed
-* Wind direction
-* Precipitation
-* Weather condition description
-
-## Excluded (Out of Scope for v1)
-
-* Air Quality Index (AQI)
-* Historical weather
-* Long-range forecasts
-* Multi-provider failover
-
-AQI was intentionally removed due to provider pricing and API rate limits.
+The goal of this project is not just building a weather UI, but showcasing **production-style architecture, separation of concerns, and maintainable code structure**.
 
 ---
 
-# Architecture
+# 🚀 Tech Stack
 
-The system follows **Layered Architecture combined with Domain-Driven Design**.
+- Kotlin
+- Coroutines & Flow
+- Jetpack Compose
+- Dagger Hilt
+- Retrofit & OkHttp
+- Coil
+- GitHub Actions (CI)
 
-```text
-src/
-  domain/
-  use-cases/
-  services/
-  providers/
-  contracts/
+---
+
+# 🧱 Architecture
+
+The project follows **Clean Architecture** with **Unidirectional Data Flow (UDF)**.
+
+Core business logic lives in the **Domain layer**, ensuring it stays independent from both UI frameworks and data implementations.
+
+```
+Presentation ──► Domain ◄── Data
 ```
 
-## Domain
+This structure ensures:
 
-Contains **core business models and logic**.
-
-Examples:
-
-```text
-Weather
-Location
-MeasurementUnits
-```
-
-Domain objects remain **independent of external providers**.
+- UI does not know how data is fetched
+- Data sources can be swapped without affecting business logic
+- Business logic remains testable and framework-independent
 
 ---
 
-## Use Cases
+# 📂 Project Structure
 
-Use cases define **application behavior**.
-
-Examples:
-
-```text
-GetCurrentWeather
-RefreshWeatherCache
 ```
-
-Each use case:
-
-* orchestrates domain logic
-* calls services/providers
-* returns contract responses
-
-Use cases are the **primary unit testing target**.
+app/
+├── data/
+│   ├── remote/         # Retrofit API interfaces & DTOs
+│   ├── repository/     # Concrete repository implementations
+│   └── mapper/         # DTO ↔ Domain model conversions
+│
+├── domain/
+│   ├── model/          # Pure Kotlin domain entities
+│   ├── repository/     # Repository interfaces
+│   └── use_case/       # Business logic units
+│
+├── presentation/
+│   ├── feature/        # Feature modules (UI state, ViewModel, screens)
+│   ├── components/     # Reusable Compose UI components
+│   └── theme/          # Material3 theming
+│
+└── di/
+    └── modules/        # Hilt dependency modules
+```
 
 ---
 
-## Services
+# 🔄 Example Data Flow
 
-Application services coordinate interactions between:
+A typical request in the application flows like this:
 
-* providers
-* domain models
-* caching policies
+```
+WeatherScreen
+      │
+      ▼
+WeatherViewModel
+      │
+      ▼
+GetWeatherUseCase
+      │
+      ▼
+WeatherRepository
+      │
+      ▼
+WeatherApi (Retrofit)
+```
 
-Services should contain **minimal business logic**.
+Each layer only depends on the layer **closer to the domain**, enforcing a strict separation of responsibilities.
 
 ---
 
-## Providers
+# 🧪 CI Pipeline
 
-Providers integrate with external weather APIs.
+The repository uses **GitHub Actions** to run automated checks on pull requests:
 
-Example structure:
+- Project build validation
+- Unit test execution
+- Static analysis (if configured)
 
-```text
-providers/
-  tomorrow/
-    tomorrow-client.ts
-    tomorrow-mapper.ts
-```
-
-Provider responses are mapped into **domain models**.
-
----
-
-## Contracts
-
-Contracts define the **stable response structure** returned by the API.
-
-Example:
-
-```text
-WeatherResponseV1
-```
-
-Contracts should change **very rarely** once published.
+This ensures the `main` branch remains stable.
 
 ---
 
@@ -195,37 +177,13 @@ It provides:
 Clone the repository:
 
 ```bash
-git clone <repo-url>
-cd weatherscope
+git clone https://github.com/axehai/weatherscope.git
 ```
 
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the project:
-
-```bash
-npm run dev
-```
+Open the project in **Android Studio** and run it on an emulator or a physical device.
 
 ---
 
-# Future Scope
+# 📄 License
 
-Planned improvements after v1:
-
-* Air Quality (AQI)
-* Forecast APIs
-* Historical weather
-* Multi-provider failover
-* Advanced caching layer
-* Rate-limit-aware request scheduler
-
----
-
-# License
-
-MIT
+MIT License
