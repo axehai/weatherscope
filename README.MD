@@ -1,10 +1,10 @@
 # 🌦️ Weatherscope
 
 <p align="center">
-<img src="https://img.shields.io/badge/Kotlin-1.9+-7F52FF?logo=kotlin&logoColor=white"/>
-<img src="https://img.shields.io/badge/Jetpack%20Compose-UI-4285F4?logo=android&logoColor=white"/>
-<img src="https://img.shields.io/badge/Min%20SDK-24-3DDC84?logo=android&logoColor=white"/>
-<img src="https://img.shields.io/github/actions/workflow/status/axehai/weatherscope/android-ci.yml?label=Build&logo=githubactions"/>
+<img src="https://img.shields.io/badge/Kotlin-1.9+-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin 1.9+"/>
+<img src="https://img.shields.io/badge/Jetpack%20Compose-UI-4285F4?logo=android&logoColor=white" alt="Jetpack Compose UI"/>
+<img src="https://img.shields.io/badge/Min%20SDK-24-3DDC84?logo=android&logoColor=white" alt="Min SDK 24"/>
+<img src="https://img.shields.io/github/actions/workflow/status/axehai/weatherscope/android-ci.yml?label=Build&logo=githubactions" alt="Build Status"/>
 </p>
 
 **Weatherscope** is a modern Android application built with **Jetpack Compose** that demonstrates how to structure scalable Android apps using **Clean Architecture** and modern Android development practices.
