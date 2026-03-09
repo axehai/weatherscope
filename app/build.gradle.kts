@@ -12,9 +12,7 @@ android {
 	}
 
 	defaultConfig {
-	defaultConfig {
 		applicationId = "com.axehai.weatherscope"
-		minSdk = 29
 		minSdk = 29
 		targetSdk = 36
 		versionCode = 1
