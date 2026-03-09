@@ -1,4 +1,4 @@
-package com.usimmicase.weatherappdemo.ui.theme
+package com.axehai.weatherscope.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

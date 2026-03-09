@@ -1,4 +1,4 @@
-package com.usimmicase.weatherappdemo
+package com.axehai.weatherscope
 
 import org.junit.Test
 

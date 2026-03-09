@@ -1,5 +1,6 @@
 reviews:
   profile: assertive
+  request_changes_workflow: true
   path_instructions:
     - path: "**/*.kt"
       instructions: |
@@ -70,6 +71,8 @@ reviews:
         - Business logic inside Compose screens.
         - Direct repository access from UI or ViewModels (must use UseCases).
         - Mutable state exposed directly to the UI.
+        - Heavy computations or object allocations inside Compose functions that are not wrapped in `remember`.
+        - Passing ViewModels down the Compose tree (pass state and lambdas instead).
 
         ============================================================
         DEPENDENCY INJECTION (Hilt)
