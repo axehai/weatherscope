@@ -1,4 +1,4 @@
-package com.axehai.weatherscope.ui.theme
+package com.axehai.weatherscope.presentation.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

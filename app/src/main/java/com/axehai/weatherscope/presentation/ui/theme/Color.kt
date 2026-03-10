@@ -1,4 +1,4 @@
-package com.axehai.weatherscope.ui.theme
+package com.axehai.weatherscope.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
