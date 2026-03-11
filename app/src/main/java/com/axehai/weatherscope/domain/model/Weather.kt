@@ -15,9 +15,9 @@ data class TodaysHighlights(
 	val feelsLikeC: Double,
 	val rainPercent: Double,
 	val humidityPercent: Double,
-	val windSpeedKph: String,
-	val uvIndex: String,
-	val pressure: String,
+	val windSpeedKph: Double,
+	val uvIndex: Double,
+	val pressure: Double,
 )
 
 data class DailyForecast(
