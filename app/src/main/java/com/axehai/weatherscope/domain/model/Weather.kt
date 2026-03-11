@@ -11,7 +11,7 @@ data class CurrentWeather(
 	val conditionLabel: String,
 )
 
-data class TodaysHighlights(
+data class TodayHighlights(
 	val feelsLikeC: Double,
 	val rainPercent: Double,
 	val humidityPercent: Double,
