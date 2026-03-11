@@ -1,15 +1,23 @@
 reviews:
   profile: assertive
   request_changes_workflow: true
+
   path_instructions:
     - path: "**/*.kt"
       instructions: |
-        The purpose of these reviews is to strictly enforce Clean Architecture correctness,
-        separation of concerns, and maintainability for this Android project. Avoid 
-        nitpicking formatting unless it severely harms readability.
+        The purpose of these reviews is to enforce clean architecture boundaries,
+        separation of concerns, correctness, and maintainability for this Android
+        project.
+
+        Review philosophy:
+        - Prioritize correctness, architecture, and testability over style nits.
+        - Do not nitpick formatting or naming unless it materially harms readability
+          or maintainability.
+        - Only raise blocking feedback for clear violations, bugs, or meaningful design risks.
+        - Prefer practical Android guidance over theoretical purity.
 
         ============================================================
-        PROJECT LAYER STRUCTURE & DEPENDENCY RULE
+        PROJECT LAYER STRUCTURE & DEPENDENCY DIRECTION
         ============================================================
         Typical modules/directories:
         presentation/
@@ -18,61 +26,87 @@ reviews:
         di/
         common/
 
-        Dependency Direction:
+        Expected dependency direction:
         - Presentation depends on Domain.
         - Data depends on Domain.
-        - Domain depends on NOTHING (pure Kotlin).
+        - Domain depends on nothing from Presentation, Data, or Android framework code.
 
-        Flag violations where the Domain layer depends on Data or Presentation, 
-        or where Presentation bypasses Domain to access Data directly.
+        Flag:
+        - Domain depending on Data or Presentation.
+        - Presentation bypassing Domain to access Data directly.
+        - Cross-layer imports that weaken boundaries.
 
         ============================================================
-        DOMAIN LAYER (STRICT)
+        DOMAIN LAYER
         ============================================================
         Domain contains core business logic.
 
+        Expected responsibilities:
+        - Entities / domain models
+        - Repository interfaces
+        - Use cases
+        - Pure business rules
+
         Rules:
-        - Must not depend on Android framework (Context, Activity, View, etc.).
-        - Must not depend on networking or DB libraries (Retrofit, Room, Gson, etc.).
+        - Must not depend on Android framework classes.
+        - Must not depend on networking / persistence implementation libraries
+          (e.g. Retrofit, Room, Gson/Moshi DTOs, etc.).
         - Must not import classes from presentation or data layers.
-        - Contains entities, repository interfaces, and use cases.
-        - Use cases must be focused (Single Responsibility) and named as verbs.
+        - Use cases should be focused, readable, and named by intent.
 
         Flag:
-        - Framework or library dependencies (e.g., DTOs leaking into Domain).
-        - Repository implementations (they belong in data).
+        - DTOs or framework models leaking into domain.
+        - Repository implementations placed in domain.
+        - Business logic tightly coupled to implementation details.
 
         ============================================================
         DATA LAYER
         ============================================================
-        Data layer implements Domain interfaces and handles external sources.
+        Data implements domain contracts and handles external sources.
 
         Allowed responsibilities:
-        - API clients and database access.
-        - DTOs (e.g., Retrofit models).
-        - Mapping DTOs to Domain models.
-        - Repository implementations.
+        - API clients
+        - Database access
+        - DTOs / local entities
+        - Mappers between external models and domain models
+        - Repository implementations
 
         Flag:
-        - Business rules or use case logic inside repositories.
-        - Returning DTOs directly to the Presentation layer without mapping.
+        - Business rules or orchestration that belong in use cases.
+        - Returning DTOs/entities directly to presentation when domain mapping is expected.
+        - Leaking persistence/network concerns upward.
 
         ============================================================
-        PRESENTATION LAYER (STRICT)
+        PRESENTATION LAYER
         ============================================================
-        Presentation contains UI (Jetpack Compose), ViewModels, and UI state.
+        Presentation contains UI, ViewModels, UI models/state, and event handling.
 
         Rules:
-        - UI renders state only and must not contain business logic.
-        - ViewModels coordinate use cases and expose UI state via StateFlow/Flow.
-        - ViewModels must remain platform-independent (No Context, Android Views, or Compose UI APIs).
+        - UI should primarily render state and send user events upward.
+        - ViewModels should coordinate use cases and expose state via StateFlow / Flow.
+        - Avoid direct repository access from UI or ViewModels when a use case layer exists.
+        - Avoid exposing mutable state directly to the UI.
+        - Prefer passing state and event lambdas down the Compose tree instead of passing ViewModels broadly.
+
+        Guidance for Compose:
+        - Flag business logic inside composables when it is non-trivial or hard to test.
+        - Flag repeated expensive work or unnecessary object allocation inside composables
+          when it is likely to cause avoidable recomposition cost.
+        - Prefer `remember`, `derivedStateOf`, or moving work outside composables when useful,
+          but do not nitpick harmless allocations.
+        - Small UI-only calculations and lightweight formatting are acceptable when they
+          do not meaningfully hurt readability or performance.
+
+        Guidance for ViewModels:
+        - ViewModels may use normal AndroidX ViewModel responsibilities.
+        - Avoid unnecessary Android framework dependencies such as Context, Views, or Compose UI APIs,
+          unless there is a justified platform integration point.
 
         Flag:
-        - Business logic inside Compose screens.
-        - Direct repository access from UI or ViewModels (must use UseCases).
-        - Mutable state exposed directly to the UI.
-        - Heavy computations or object allocations inside Compose functions that are not wrapped in `remember`.
-        - Passing ViewModels down the Compose tree (pass state and lambdas instead).
+        - Business logic inside screens or composables.
+        - Direct repository access from composables or ViewModels.
+        - Mutable state exposed as public mutable types.
+        - UI code that becomes hard to test due to mixed concerns.
 
         ============================================================
         DEPENDENCY INJECTION (Hilt)
@@ -81,26 +115,80 @@ reviews:
 
         Rules:
         - No business logic in DI modules.
-        - Prefer constructor injection across the app.
+        - Prefer constructor injection by default.
+        - Use provider methods only when needed for third-party or framework types.
+
+        Flag:
+        - Complex logic hidden inside DI modules.
+        - Manual dependency construction where DI should own it.
+        - Unnecessary singleton scope or incorrect scoping that can cause bugs.
 
         ============================================================
         TESTABILITY
         ============================================================
-        Code must be testable by design.
+        Code should remain testable by design.
 
         Rules:
-        - Every UseCase must have a corresponding Unit Test.
-        - Inject dispatchers for Coroutines (do not hardcode Dispatchers.IO/Main).
+        - New or meaningfully changed business logic should usually have unit test coverage.
+        - Inject coroutine dispatchers instead of hardcoding Dispatchers.IO/Main in testable code.
+        - Prefer designs that allow mocking/faking dependencies cleanly.
+
+        Do NOT block solely because:
+        - A trivial pass-through use case has no dedicated test yet.
+        - A PR is only changing UI layout/text with no logic risk.
+        - A change is wiring-only and does not introduce behavior.
 
         Flag:
-        - Hardcoded dependencies preventing testing.
-        - New UseCases added without test coverage.
+        - New non-trivial use case logic without test coverage.
+        - Hardcoded dependencies that make testing difficult.
+        - Coroutine code tightly coupled to real dispatchers.
 
         ============================================================
         REVIEW PRIORITY
         ============================================================
         Prioritize feedback in this order:
-        1. Architecture & boundary violations (Data/Presentation leaking into Domain)
-        2. Missing unit tests for UseCases
-        3. State management and concurrency bugs
-        4. Maintainability and naming clarity
+        1. Architecture and boundary violations
+        2. Correctness / bug risks / concurrency issues
+        3. Missing tests for meaningful business logic
+        4. State management and maintainability
+        5. Naming/readability improvements
+
+    - path: "**/*.kts"
+      instructions: |
+        Review Gradle Kotlin DSL files for correctness, maintainability, and dependency hygiene.
+
+        Focus on:
+        - Correct plugin and dependency usage
+        - Avoiding duplicated or conflicting dependency declarations
+        - Sensible version management
+        - Clear module boundaries and build setup
+
+        Flag:
+        - Unused dependencies or plugins
+        - Suspicious version mismatches
+        - Build logic that should be centralized but is duplicated excessively
+
+        Avoid nitpicking formatting unless it affects readability.
+
+    - path: ".github/workflows/*.yml"
+      instructions: |
+        Review CI workflows for correctness, reliability, and efficiency.
+
+        Focus on:
+        - Broken or incomplete job dependencies
+        - Missing caching where clearly beneficial
+        - Risky secrets usage
+        - Needlessly slow or duplicated steps
+
+        Prefer practical suggestions. Avoid overengineering.
+
+    - path: "**/*.md"
+      instructions: |
+        Review docs for clarity, accuracy, and consistency with the codebase.
+
+        Focus on:
+        - Incorrect setup steps
+        - Missing prerequisites
+        - Mismatch between README/docs and actual project behavior
+
+        Avoid style-only nitpicks unless the writing is confusing.
