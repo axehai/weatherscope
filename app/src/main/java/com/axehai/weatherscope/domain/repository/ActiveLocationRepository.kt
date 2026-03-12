@@ -1,6 +1,7 @@
 package com.axehai.weatherscope.domain.repository
 
 import com.axehai.weatherscope.domain.model.ActiveLocation
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository interface for managing the active location in the weather scope application.
@@ -8,11 +9,11 @@ import com.axehai.weatherscope.domain.model.ActiveLocation
  */
 interface ActiveLocationRepository {
 	/**
-	 * Retrieves the currently active location.
+	 * Observes the currently active location as a Flow.
 	 *
-	 * @return The [ActiveLocation] object representing the active location.
+	 * @return A Flow emitting the current [ActiveLocation].
 	 */
-	suspend fun getActiveLocation(): ActiveLocation
+	fun observeActiveLocation(): Flow<ActiveLocation>
 
 	/**
 	 * Sets the specified location as the active location.
