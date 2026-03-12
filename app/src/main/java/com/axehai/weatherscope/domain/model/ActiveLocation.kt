@@ -3,7 +3,7 @@ package com.axehai.weatherscope.domain.model
 data class ActiveLocation(
 	val latitude: Double,
 	val longitude: Double,
-	val name:String,
+	val name: String,
 	val source: LocationSource,
 )
 
@@ -15,22 +15,38 @@ data class ActiveLocation(
  *
  * @see ActiveLocation
  */
-enum class LocationSource {
+enum class LocationSource(val sourceId: Int) {
 	/**
 	 * The default location, typically a predefined location used when no other
 	 * location source is available (e.g., a default city set by the application).
 	 */
-	DEFAULT,
+	DEFAULT(1),
 
 	/**
 	 * The location sourced from the device's GPS or location services.
 	 * This represents the user's current physical location.
 	 */
-	DEVICE,
+	DEVICE(2),
 
 	/**
 	 * The location sourced from a user search query.
 	 * This represents a location that the user explicitly searched for.
 	 */
-	SEARCH
+	SEARCH(3);
+
+	/**
+	 * Companion object for [LocationSource] enum, providing utility functions
+	 *
+	 */
+	companion object {
+		/**
+		 * Returns the [LocationSource] corresponding to the given [sourceId].
+		 *
+		 * @param sourceId The integer ID of the location source.
+		 * @return The matching [LocationSource], or [DEFAULT] if no match is found.
+		 */
+		fun fromSourceId(sourceId: Int): LocationSource {
+			return entries.firstOrNull { it.sourceId == sourceId } ?: DEFAULT
+		}
+	}
 }
