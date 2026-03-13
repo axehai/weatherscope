@@ -21,4 +21,12 @@ interface ActiveLocationRepository {
 	 * @param location The [ActiveLocation] to set as active.
 	 */
 	suspend fun setActiveLocation(location: ActiveLocation)
+
+	/**
+	 * Retrieves the currently active location or null if none is set.
+	 * This method is useful for initialization logic, avoiding the need for Flow.first() with fake fallbacks.
+	 *
+	 * @return The current [ActiveLocation] or null.
+	 */
+	suspend fun getActiveLocationOrNull(): ActiveLocation?
 }
