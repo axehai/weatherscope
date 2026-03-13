@@ -7,13 +7,12 @@ import com.axehai.weatherscope.data.local.mapper.toStored
 import com.axehai.weatherscope.data.local.model.StoredActiveLocation
 import com.axehai.weatherscope.domain.model.ActiveLocation
 import com.axehai.weatherscope.domain.repository.ActiveLocationRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retryWhen
 import javax.inject.Inject
 
 class ActiveLocationRepositoryImpl @Inject constructor(
@@ -29,19 +28,14 @@ class ActiveLocationRepositoryImpl @Inject constructor(
 		}
 	}
 
-	override fun observeActiveLocation(): Flow<ActiveLocation> = dataStore.data
-		.retryWhen { cause, attempt ->
-			if (cause is IOException && attempt < 3) {
-				delay(1000)
-				true
-			} else {
-				false
-			}
+	override fun observeActiveLocation(): Flow<ActiveLocation> = dataStore.data.catch { exception ->
+		if (exception is IOException) {
+			emit(StoredActiveLocation())
+		} else {
+			throw exception
 		}
-		.filter { it.sourceId != StoredActiveLocation.SOURCE_UNINITIALIZED }
-		.map { it.toDomain() }
+	}.filter { it.sourceId != StoredActiveLocation.SOURCE_UNINITIALIZED }.map { it.toDomain() }
 		.distinctUntilChanged()
-
 
 	override suspend fun setActiveLocation(location: ActiveLocation) {
 		dataStore.updateData { _ ->
