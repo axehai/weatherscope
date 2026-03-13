@@ -9,6 +9,7 @@ fun ActiveLocation.toStored(): StoredActiveLocation =
 		latitude = latitude,
 		longitude = longitude,
 		name = name,
+		country = country,
 		sourceId = source.sourceId
 	)
 
@@ -17,5 +18,6 @@ fun StoredActiveLocation.toDomain(): ActiveLocation =
 		latitude = latitude,
 		longitude = longitude,
 		name = name,
+		country = country,
 		source = LocationSource.fromSourceId(sourceId)
 	)

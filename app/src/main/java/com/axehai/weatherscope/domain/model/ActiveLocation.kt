@@ -4,6 +4,7 @@ data class ActiveLocation(
 	val latitude: Double,
 	val longitude: Double,
 	val name: String,
+	val country: String?,
 	val source: LocationSource,
 )
 
