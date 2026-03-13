@@ -59,7 +59,7 @@ dependencies {
 	implementation(libs.androidx.compose.material3)
 	implementation(libs.androidx.datastore)
 	implementation(libs.hilt.android)
-	testImplementation(libs.junit.junit)
+	testImplementation(libs.junit)
 	testImplementation(libs.kotlinx.coroutines.test)
 	ksp(libs.hilt.compiler)
 	implementation(libs.kotlinx.serialization.core)
