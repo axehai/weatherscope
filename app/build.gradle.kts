@@ -1,5 +1,3 @@
-import com.android.tools.r8.internal.li
-
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.compose)
@@ -59,13 +57,15 @@ dependencies {
 	implementation(libs.androidx.compose.material3)
 	implementation(libs.androidx.datastore)
 	implementation(libs.hilt.android)
-	testImplementation(libs.junit)
-	testImplementation(libs.kotlinx.coroutines.test)
-	ksp(libs.hilt.compiler)
 	implementation(libs.kotlinx.serialization.core)
 	implementation(libs.kotlinx.serialization.json)
 
+	ksp(libs.hilt.compiler)
+
 	testImplementation(libs.junit)
+	testImplementation(libs.kotlinx.coroutines.test)
+
+
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
