@@ -28,7 +28,7 @@ class ActiveLocationRepositoryImpl @Inject constructor(
 
 
 	override suspend fun setActiveLocation(location: ActiveLocation) {
-		dataStore.updateData {
+		dataStore.updateData { _ ->
 			location.toStored()
 		}
 	}
