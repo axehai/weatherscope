@@ -5,10 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStoreFile
-import com.axehai.weatherscope.data.local.mapper.toStored
 import com.axehai.weatherscope.data.local.model.StoredActiveLocation
 import com.axehai.weatherscope.data.local.serializer.StoredActiveLocationSerializer
-import com.axehai.weatherscope.domain.defaults.ActiveLocationDefaults.NEW_DELHI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,7 +27,7 @@ object DataStoreModule {
 			serializer = StoredActiveLocationSerializer,
 			produceFile = { context.dataStoreFile("active_location.json") },
 			corruptionHandler = ReplaceFileCorruptionHandler {
-				NEW_DELHI.toStored()
+				StoredActiveLocation()
 			})
 	}
 }
