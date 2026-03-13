@@ -1,12 +1,14 @@
 package com.axehai.weatherscope.data.repository
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.IOException
 import com.axehai.weatherscope.data.local.mapper.toDomain
 import com.axehai.weatherscope.data.local.mapper.toStored
 import com.axehai.weatherscope.data.local.model.StoredActiveLocation
 import com.axehai.weatherscope.domain.model.ActiveLocation
 import com.axehai.weatherscope.domain.repository.ActiveLocationRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -17,14 +19,23 @@ class ActiveLocationRepositoryImpl @Inject constructor(
 	private val dataStore: DataStore<StoredActiveLocation>
 ) : ActiveLocationRepository {
 	override suspend fun getActiveLocationOrNull(): ActiveLocation? {
-		val stored = dataStore.data.first()
-		return if (stored.sourceId == StoredActiveLocation.SOURCE_UNINITIALIZED) null
-		else stored.toDomain()
+		return try {
+			val stored = dataStore.data.first()
+			if (stored.sourceId == StoredActiveLocation.SOURCE_UNINITIALIZED) null
+			else stored.toDomain()
+		} catch (_: IOException) {
+			null
+		}
 	}
 
-	override fun observeActiveLocation(): Flow<ActiveLocation> =
-		dataStore.data.filter { it.sourceId != StoredActiveLocation.SOURCE_UNINITIALIZED }
-			.map { it.toDomain() }.distinctUntilChanged()
+	override fun observeActiveLocation(): Flow<ActiveLocation> = dataStore.data.catch { e ->
+		if (e is IOException) {
+			emit(StoredActiveLocation())
+		} else {
+			throw e
+		}
+	}.filter { it.sourceId != StoredActiveLocation.SOURCE_UNINITIALIZED }.map { it.toDomain() }
+		.distinctUntilChanged()
 
 
 	override suspend fun setActiveLocation(location: ActiveLocation) {
