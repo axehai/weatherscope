@@ -44,10 +44,13 @@ enum class LocationSource(val sourceId: Int) {
 		 * Returns the [LocationSource] corresponding to the given [sourceId].
 		 *
 		 * @param sourceId The integer ID of the location source.
-		 * @return The matching [LocationSource], or [DEFAULT] if no match is found.
+		 * @return The matching [LocationSource].
+		 * @throws IllegalArgumentException if no matching source is found.
 		 */
 		fun fromSourceId(sourceId: Int): LocationSource {
-			return entries.firstOrNull { it.sourceId == sourceId } ?: DEFAULT
+			return requireNotNull(entries.firstOrNull { it.sourceId == sourceId }) {
+				"Unknown Location Source"
+			}
 		}
 	}
 }
