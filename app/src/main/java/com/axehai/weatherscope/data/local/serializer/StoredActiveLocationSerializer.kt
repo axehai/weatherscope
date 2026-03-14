@@ -11,7 +11,7 @@ import java.io.OutputStream
 
 object StoredActiveLocationSerializer : Serializer<StoredActiveLocation> {
 	override val defaultValue: StoredActiveLocation = StoredActiveLocation()
-	val json = Json { ignoreUnknownKeys = true }
+	private val json = Json { ignoreUnknownKeys = true }
 	override suspend fun readFrom(input: InputStream): StoredActiveLocation = try {
 		json.decodeFromString<StoredActiveLocation>(
 			input.readBytes().decodeToString()
