@@ -4,6 +4,7 @@ import com.axehai.weatherscope.domain.model.ActiveLocation
 import com.axehai.weatherscope.domain.model.LocationSource
 import com.axehai.weatherscope.domain.repository.ActiveLocationRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -46,7 +47,7 @@ class FakeRepository : ActiveLocationRepository {
 
 
 	override fun observeActiveLocation(): Flow<ActiveLocation> {
-		TODO("Not yet implemented")
+		return emptyFlow()
 	}
 
 	override suspend fun setActiveLocation(location: ActiveLocation) {
