@@ -1,6 +1,9 @@
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.compose)
+	alias(libs.plugins.kotlin.serialization)
+	alias(libs.plugins.ksp)
+	alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -52,7 +55,17 @@ dependencies {
 	implementation(libs.androidx.compose.ui.graphics)
 	implementation(libs.androidx.compose.ui.tooling.preview)
 	implementation(libs.androidx.compose.material3)
+	implementation(libs.androidx.datastore)
+	implementation(libs.hilt.android)
+	implementation(libs.kotlinx.serialization.core)
+	implementation(libs.kotlinx.serialization.json)
+
+	ksp(libs.hilt.compiler)
+
 	testImplementation(libs.junit)
+	testImplementation(libs.kotlinx.coroutines.test)
+
+
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
