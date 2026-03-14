@@ -1,14 +1,13 @@
-package com.axehai.weatherscope.domain.use_case
+package com.axehai.weatherscope.domain.use_case.ensure_active_location
 
 import com.axehai.weatherscope.domain.defaults.ActiveLocationDefaults
 import com.axehai.weatherscope.domain.model.ActiveLocation
+import com.axehai.weatherscope.domain.model.LocationSource
 import com.axehai.weatherscope.domain.repository.ActiveLocationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert
 import org.junit.Test
 
 class EnsureActiveLocationInitializedUseCaseTest {
@@ -20,8 +19,8 @@ class EnsureActiveLocationInitializedUseCaseTest {
 
 		useCase()
 
-		assertEquals(ActiveLocationDefaults.NEW_DELHI, fakeRepository.savedLocation)
-		assertEquals(1, fakeRepository.setActiveLocationCallCount)
+		Assert.assertEquals(ActiveLocationDefaults.NEW_DELHI, fakeRepository.savedLocation)
+		Assert.assertEquals(1, fakeRepository.setActiveLocationCallCount)
 	}
 
 	@Test
@@ -31,7 +30,7 @@ class EnsureActiveLocationInitializedUseCaseTest {
 			longitude = 72.8777,
 			name = "Mumbai",
 			country = "India",
-			source = ActiveLocationDefaults.NEW_DELHI.source // or LocationSource.SEARCH
+			source = LocationSource.DEVICE // or LocationSource.SEARCH
 		)
 
 		val fakeRepository = FakeActiveLocationRepository(initialLocation = existingLocation)
@@ -39,9 +38,9 @@ class EnsureActiveLocationInitializedUseCaseTest {
 
 		useCase()
 
-		assertNull(fakeRepository.savedLocation)
-		assertEquals(0, fakeRepository.setActiveLocationCallCount)
-		assertTrue(fakeRepository.getActiveLocationOrNullCallCount > 0)
+		Assert.assertNull(fakeRepository.savedLocation)
+		Assert.assertEquals(0, fakeRepository.setActiveLocationCallCount)
+		Assert.assertTrue(fakeRepository.getActiveLocationOrNullCallCount > 0)
 	}
 }
 

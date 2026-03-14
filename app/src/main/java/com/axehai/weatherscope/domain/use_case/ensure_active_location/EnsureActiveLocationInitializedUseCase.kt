@@ -1,4 +1,4 @@
-package com.axehai.weatherscope.domain.use_case
+package com.axehai.weatherscope.domain.use_case.ensure_active_location
 
 import com.axehai.weatherscope.domain.defaults.ActiveLocationDefaults
 import com.axehai.weatherscope.domain.repository.ActiveLocationRepository
