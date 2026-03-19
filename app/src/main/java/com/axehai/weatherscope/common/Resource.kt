@@ -22,7 +22,7 @@ sealed interface Resource<out T> {
      * @param T The type of the data.
      * @property data The result of the successful operation.
      */
-    data class Success<T>(val data: T) : Resource<T>
+    data class Success<T>(val data: T?) : Resource<T>
 
     /**
      * Represents the error state of a resource, containing a descriptive [message].
