@@ -22,6 +22,6 @@ suspend fun <T> safeApiCall(block: suspend () -> T): Resource<T> {
         Resource.Success(block())
     } catch (e: Exception) {
         if (e is CancellationException) throw e
-        Resource.Error(e.message ?: "Unknown exception happened")
+        Resource.Error(e.localizedMessage ?: "Unknown exception happened")
     }
 }
