@@ -1,19 +1,13 @@
 package com.axehai.weatherscope.common
 
-/**
- * Sealed class representing the state of a resource operation.
- */
-sealed class Resource<T>(val data: T? = null, val message: String? = null) {
-	/**
-	 * Success state containing the data.
-	 */
-	class Success<T>(data: T?) : Resource<T>(data)
-	/**
-	 * Error state with an optional message and data.
-	 */
-	class Error<T>(message: String?, data: T? = null) : Resource<T>(data, message)
-	/**
-	 * Loading state with optional data.
-	 */
-	class Loading<T>(data: T? = null) : Resource<T>(data)
+
+sealed interface Resource<out T> {
+    data object Loading : Resource<Nothing>
+    data class Success<T>(val data: T) : Resource<T>
+    data class Error(val error: AppError) : Resource<Nothing>
+}
+
+sealed interface AppError {
+    data object NetworkError : AppError
+    data class Unknown(val throwable: Throwable? = null) : AppError
 }
