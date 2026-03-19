@@ -1,7 +1,6 @@
 package com.axehai.weatherscope.di
 
 import com.axehai.weatherscope.BuildConfig
-import com.axehai.weatherscope.data.remote.openmeteo.geocoding.OpenMeteoGeocodingService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +30,7 @@ object NetworkModule {
     fun provideHttpClient(
         json: Json
     ): HttpClient = HttpClient(OkHttp) {
-        expectSuccess=true
+        expectSuccess = true
         install(ContentNegotiation) { json(json) }
         install(HttpTimeout) {
             requestTimeoutMillis = 15_000
