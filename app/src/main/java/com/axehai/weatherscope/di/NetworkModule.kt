@@ -43,12 +43,4 @@ object NetworkModule {
             install(Logging) { level = LogLevel.BODY }
         }
     }
-
-    @Provides
-    @Singleton
-    fun providesGeocodingService(
-        client: HttpClient
-    ): OpenMeteoGeocodingService {
-        return OpenMeteoGeocodingService(client)
-    }
 }
