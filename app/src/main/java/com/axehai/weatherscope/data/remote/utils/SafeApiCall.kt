@@ -3,7 +3,7 @@ package com.axehai.weatherscope.data.remote.utils
 import com.axehai.weatherscope.common.Resource
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
-import okio.IOException
+import java.io.IOException
 
 /**
  * Executes a suspending network [block] and encapsulates the result in a [Resource].
