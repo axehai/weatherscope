@@ -33,4 +33,3 @@ Run `gh project item-list 4 --owner axehai --format json` for current status.
 - One issue = one PR, branch named `issue/<number>-short-desc`
 - Acceptance criteria in issues are the source of truth for done/not-done
 - Don't add comments, docstrings, or handling for things not in scope
-- Inject coroutine dispatchers (never hardcode Dispatchers.IO/Main in testable code)
