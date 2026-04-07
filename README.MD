@@ -110,7 +110,6 @@ Each feature is developed by:
 2. Writing unit tests for the use case
 3. Implementing supporting services/providers
 
-
 Tests validate:
 
 * domain behavior
