@@ -3,7 +3,7 @@ package com.axehai.weatherscope.presentation.weather_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.axehai.weatherscope.common.Resource
-import com.axehai.weatherscope.data.remote.openmeteo.geocoding.mapper.toActiveLocation
+import com.axehai.weatherscope.domain.model.toActiveLocation
 import com.axehai.weatherscope.domain.model.LocationSearchResult
 import com.axehai.weatherscope.domain.use_case.ensure_active_location.EnsureActiveLocationInitializedUseCase
 import com.axehai.weatherscope.domain.use_case.search_locations.SearchLocationsUseCase
