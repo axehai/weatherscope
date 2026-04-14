@@ -1,27 +1,27 @@
 reviews:
-  profile: balanced
+  profile: chill
   request_changes_workflow: true
 
-  # GLOBAL INSTRUCTIONS: Define what is actually worth blocking a PR
-  instructions: |
-    CRITICAL DIRECTIVE ON BLOCKING REVIEWS:
-    You must strictly categorize your feedback into "BLOCKING" and "NON-BLOCKING".
-    
-    ONLY issue a formal "Request Changes" (blocking the PR) for critical issues:
-    1. Severe logic bugs, null pointer risks, or crash-inducing code.
-    2. Blatant layer violations (e.g., Data or Presentation imports leaking into Domain).
-    3. Threading/Concurrency issues (e.g., performing heavy I/O on the Main thread).
-    4. State management risks (e.g., exposing MutableStateFlow directly to the UI).
-    
-    For EVERYTHING ELSE, you MUST use standard, non-blocking comments:
-    - Markdown spacing (e.g., MD022 lint warnings), formatting, and typos.
-    - Variable naming suggestions.
-    - Minor syntax improvements or Kotlin idiomatic suggestions.
-    - Duplicate lines in documentation.
-    
-    If the only issues found are NON-BLOCKING, you must Approve the pull request while leaving your suggestions as standard comments.
-
   path_instructions:
+    - path: "**"
+      instructions: |
+        CRITICAL DIRECTIVE ON BLOCKING REVIEWS:
+        You must strictly categorize your feedback into "BLOCKING" and "NON-BLOCKING".
+        
+        ONLY issue a formal "Request Changes" (blocking the PR) for critical issues:
+        1. Severe logic bugs, null pointer risks, or crash-inducing code.
+        2. Blatant layer violations (e.g., Data or Presentation imports leaking into Domain).
+        3. Threading/Concurrency issues (e.g., performing heavy I/O on the Main thread).
+        4. State management risks (e.g., exposing MutableStateFlow directly to the UI).
+        
+        For EVERYTHING ELSE, you MUST use standard, non-blocking comments:
+        - Markdown spacing (e.g., MD022 lint warnings), formatting, and typos.
+        - Variable naming suggestions.
+        - Minor syntax improvements or Kotlin idiomatic suggestions.
+        - Duplicate lines in documentation.
+        
+        If the only issues found are NON-BLOCKING, you must Approve the pull request while leaving your suggestions as standard comments.
+
     - path: "**/*.kt"
       instructions: |
         The purpose of these reviews is to enforce clean architecture boundaries,
@@ -72,6 +72,7 @@ reviews:
           (e.g. Retrofit, Room, Gson/Moshi DTOs, etc.).
         - Must not import classes from presentation or data layers.
         - Use cases should be focused, readable, and named by intent.
+        - Ensure async results are wrapped in the `Resource` sealed class as per project standards.
 
         Flag:
         - DTOs or framework models leaking into domain.
@@ -203,14 +204,10 @@ reviews:
 
     - path: "**/*.md"
       instructions: |
-        Review docs ONLY for clarity, accuracy, and consistency with the codebase.
+        Review docs for clarity, accuracy, and consistency with the codebase.
         
         Focus on:
         - Incorrect setup steps
         - Missing prerequisites
         - Mismatch between README/docs and actual project behavior
-
-        STRICT RULES:
-        - DO NOT report any markdown linting errors (e.g., MD022, heading spacing, duplicate lines).
-        - DO NOT nitpick spacing, empty lines, or formatting under any circumstances.
-        - If the text is human-readable, leave it alone.
+        - Markdown linting errors (e.g., MD022 heading spacing) as non-blocking suggestions.
