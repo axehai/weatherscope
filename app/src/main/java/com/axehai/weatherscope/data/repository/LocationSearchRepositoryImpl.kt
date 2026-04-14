@@ -11,11 +11,13 @@ import javax.inject.Inject
 class LocationSearchRepositoryImpl @Inject constructor(
     private val geocodingService: OpenMeteoGeocodingService
 ) : LocationSearchRepository {
-    override suspend fun search(query: String): Resource<List<LocationSearchResult>> =
-        safeApiCall {
+    override suspend fun search(query: String): Resource<List<LocationSearchResult>> {
+        if (query.isBlank()) return Resource.Success(emptyList())
+        return safeApiCall {
             geocodingService.searchLocations(query)
                 .results
                 ?.map { it.toLocationSearchResult() }
                 ?: emptyList()
         }
+    }
 }

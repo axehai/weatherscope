@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
@@ -59,8 +58,7 @@ class WeatherViewModel @Inject constructor(
             .debounce(300)
             .distinctUntilChanged()
             .flatMapLatest { query ->
-                if (query.isBlank()) flowOf(Resource.Success(emptyList()))
-                else flow {
+                flow {
                     emit(Resource.Loading)
                     emit(searchLocations(query))
                 }
