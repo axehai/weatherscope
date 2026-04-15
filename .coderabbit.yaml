@@ -8,13 +8,18 @@ reviews:
         CRITICAL DIRECTIVE ON BLOCKING REVIEWS:
         You must strictly categorize your feedback into "BLOCKING" and "NON-BLOCKING".
         
-        ONLY issue a formal "Request Changes" (blocking the PR) for critical issues:
+        Generally issue a formal "Request Changes" (blocking the PR) for critical issues:
         1. Severe logic bugs, null pointer risks, or crash-inducing code.
         2. Blatant layer violations (e.g., Data or Presentation imports leaking into Domain).
         3. Threading/Concurrency issues (e.g., performing heavy I/O on the Main thread).
         4. State management risks (e.g., exposing MutableStateFlow directly to the UI).
-        
-        For EVERYTHING ELSE, you MUST use standard, non-blocking comments:
+
+        Always issue "Request Changes" — regardless of other criteria — for:
+        - Leaked secrets, credentials, or API keys anywhere in the diff.
+        - Build-breaking changes or broken CI steps.
+        - Introduced security vulnerabilities or unsafe dependency upgrades.
+
+        Prefer standard, non-blocking comments for everything else:
         - Markdown spacing (e.g., MD022 lint warnings), formatting, and typos.
         - Variable naming suggestions.
         - Minor syntax improvements or Kotlin idiomatic suggestions.
