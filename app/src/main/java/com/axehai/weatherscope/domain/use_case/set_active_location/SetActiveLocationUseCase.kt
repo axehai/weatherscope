@@ -15,7 +15,7 @@ class SetActiveLocationUseCase @Inject constructor(
 	 * Sets the active location.
 	 * @param activeLocation The active location to set.
 	 */
-	suspend operator fun invoke (activeLocation: ActiveLocation){
+	suspend operator fun invoke(activeLocation: ActiveLocation) {
 		repository.setActiveLocation(activeLocation)
 	}
 }
